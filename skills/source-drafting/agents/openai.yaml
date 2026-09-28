@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Drafting"
+  short_description: "Draft prose that stays traceable to supplied sources."
+  default_prompt: "Draft this from the provided sources and keep every material claim traceable."

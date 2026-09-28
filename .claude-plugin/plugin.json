@@ -1,0 +1,11 @@
+{
+  "name": "agent-dotfiles",
+  "version": "0.1.0",
+  "description": "A small tmux cockpit and provider-neutral workflows for coding agents.",
+  "author": {"name": "alisherry"},
+  "homepage": "https://github.com/alisherry/agent-dotfiles",
+  "repository": "https://github.com/alisherry/agent-dotfiles",
+  "license": "MIT",
+  "skills": "./skills/",
+  "hooks": "./hooks/claude-hooks.json"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Parallel Work"
+  short_description: "Split independent work into safe, owned agent lanes."
+  default_prompt: "Partition this task into independent lanes, coordinate them safely, and verify the integrated result."

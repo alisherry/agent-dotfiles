@@ -1,0 +1,16 @@
+{
+  "name": "agent-dotfiles",
+  "version": "0.1.0",
+  "description": "A small tmux cockpit and provider-neutral workflows for coding agents.",
+  "author": {"name": "alisherry"},
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Agent Dotfiles",
+    "shortDescription": "Tmux state and portable agent workflows.",
+    "longDescription": "A transparent tmux cockpit with lifecycle state indicators and provider-neutral skills for Codex and Claude.",
+    "developerName": "alisherry",
+    "category": "Productivity",
+    "capabilities": ["skills", "hooks"],
+    "defaultPrompt": "Help me use the portable agent workflows in this plugin."
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Summarize Change"
+  short_description: "Explain a change by intent, risk, and verification."
+  default_prompt: "Summarize this change for a reviewer, including risk and test evidence."

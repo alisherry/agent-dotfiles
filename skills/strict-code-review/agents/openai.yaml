@@ -1,0 +1,4 @@
+interface:
+  display_name: "Strict Code Review"
+  short_description: "Find concrete correctness, security, and regression risks."
+  default_prompt: "Review this change strictly. Lead with actionable findings and cite exact locations."

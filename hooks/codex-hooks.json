@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex SessionStart"}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex UserPromptSubmit"}]}],
+    "PreToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex PreToolUse"}]}],
+    "PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex PostToolUse"}]}],
+    "PermissionRequest": [{"matcher": "*", "hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex PermissionRequest"}]}],
+    "SubagentStart": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex SubagentStart"}]}],
+    "SubagentStop": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex SubagentStop"}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex Stop"}]}],
+    "SessionEnd": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex SessionEnd"}]}],
+    "Interrupt": [{"hooks": [{"type": "command", "command": "\"${PLUGIN_ROOT}/scripts/agent-state\" codex Interrupt"}]}]
+  }
+}

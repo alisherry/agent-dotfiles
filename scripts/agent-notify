@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -u
+
+provider=${1:-agent}
+state=${2:-done}
+
+if [ -z "${TMUX:-}" ] || [ -z "${TMUX_PANE:-}" ] || ! command -v tmux >/dev/null 2>&1; then
+  exit 0
+fi
+
+active_pane=$(tmux display-message -p '#{pane_id}' 2>/dev/null || true)
+if [ "$active_pane" = "$TMUX_PANE" ]; then
+  exit 0
+fi
+
+case "$state" in
+  waiting) message="$provider needs attention" ;;
+  done) message="$provider finished" ;;
+  *) message="$provider: $state" ;;
+esac
+
+tmux display-message -d 5000 -t "$TMUX_PANE" "$message" 2>/dev/null || true
+
+if [ "$state" = waiting ] && command -v osascript >/dev/null 2>&1; then
+  safe_provider=$(printf '%s' "$provider" | tr -cd '[:alnum:] _-')
+  osascript -e "display notification \"Needs attention\" with title \"$safe_provider\"" >/dev/null 2>&1 || true
+fi
+
+exit 0
