@@ -5,14 +5,16 @@ script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 apply=false
 install_ghostty=false
 install_shell=false
+install_claude=false
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --apply) apply=true ;;
     --ghostty) install_ghostty=true ;;
     --shell) install_shell=true ;;
-    --all) install_ghostty=true; install_shell=true ;;
-    *) printf 'Usage: %s [--apply] [--ghostty] [--shell] [--all]\n' "$0" >&2; exit 2 ;;
+    --claude) install_claude=true ;;
+    --all) install_ghostty=true; install_shell=true; install_claude=true ;;
+    *) printf 'Usage: %s [--apply] [--ghostty] [--shell] [--claude] [--all]\n' "$0" >&2; exit 2 ;;
   esac
   shift
 done
@@ -20,6 +22,8 @@ done
 config_root=${XDG_CONFIG_HOME:-"$HOME/.config"}
 tmux_dir="$config_root/tmux"
 ghostty_dir="$config_root/ghostty"
+agent_config_dir="$config_root/agent-dotfiles"
+claude_dir=${CLAUDE_CONFIG_DIR:-"$HOME/.claude"}
 backup_root="$HOME/.agent-dotfiles-backup"
 timestamp=$(date '+%Y%m%d-%H%M%S')
 
@@ -37,6 +41,16 @@ if [ "$install_shell" = true ]; then
   printf '  link %s -> %s\n' "$config_root/zsh/.zshrc" "$script_dir/zsh/.zshrc"
   printf '  link %s -> %s\n' "$config_root/zsh/conf.d" "$script_dir/zsh/conf.d"
   printf '  link %s -> %s\n' "$config_root/starship.toml" "$script_dir/zsh/starship.toml"
+fi
+if [ "$install_claude" = true ]; then
+  printf '  link %s -> %s\n' "$agent_config_dir/scripts/agent-state" "$script_dir/scripts/agent-state"
+  printf '  link %s -> %s\n' "$agent_config_dir/scripts/agent-notify" "$script_dir/scripts/agent-notify"
+  printf '  link %s -> %s\n' "$agent_config_dir/scripts/claude-statusline" "$script_dir/scripts/claude-statusline"
+  printf '  link %s -> %s\n' "$claude_dir/settings.json" "$script_dir/claude/settings.json"
+  for skill_dir in "$script_dir"/skills/*; do
+    skill_name=${skill_dir##*/}
+    printf '  link %s -> %s\n' "$claude_dir/skills/$skill_name" "$skill_dir"
+  done
 fi
 printf '  existing files, if any, move under %s/%s/\n' "$backup_root" "$timestamp"
 
@@ -84,6 +98,18 @@ if [ "$install_shell" = true ]; then
   install_link "$script_dir/zsh/.zshrc" "$config_root/zsh/.zshrc" zshrc
   install_link "$script_dir/zsh/conf.d" "$config_root/zsh/conf.d" zsh-conf.d
   install_link "$script_dir/zsh/starship.toml" "$config_root/starship.toml" starship.toml
+fi
+
+if [ "$install_claude" = true ]; then
+  mkdir -p "$agent_config_dir/scripts" "$claude_dir/skills"
+  install_link "$script_dir/scripts/agent-state" "$agent_config_dir/scripts/agent-state" agent-state
+  install_link "$script_dir/scripts/agent-notify" "$agent_config_dir/scripts/agent-notify" agent-notify
+  install_link "$script_dir/scripts/claude-statusline" "$agent_config_dir/scripts/claude-statusline" claude-statusline
+  install_link "$script_dir/claude/settings.json" "$claude_dir/settings.json" claude-settings.json
+  for skill_dir in "$script_dir"/skills/*; do
+    skill_name=${skill_dir##*/}
+    install_link "$skill_dir" "$claude_dir/skills/$skill_name" "claude-skill-$skill_name"
+  done
 fi
 
 printf '\nDone. Start tmux normally, then launch your approved agent command inside it.\n'

@@ -29,7 +29,7 @@ printf '{}' | "$repo_dir/scripts/agent-state" codex PermissionRequest
 grep -q 'set-option -wq -t %7 @agent_state waiting' "$AGENT_STATE_TEST_LOG"
 
 : >"$AGENT_STATE_TEST_LOG"
-printf '{"tool_name":"Task"}' | "$repo_dir/scripts/agent-state" claude PreToolUse
+printf '{}' | "$repo_dir/scripts/agent-state" claude SubagentStart
 grep -q 'set-option -wq -t %7 @agent_subagents 1' "$AGENT_STATE_TEST_LOG"
 grep -q 'set-option -wq -t %7 @agent_state working' "$AGENT_STATE_TEST_LOG"
 

@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -u
+
+input=$(cat)
+
+json_value() {
+  path=${1#.}
+  if command -v jq >/dev/null 2>&1; then
+    printf '%s' "$input" | jq -r ".$path // empty" 2>/dev/null
+  elif command -v python3 >/dev/null 2>&1; then
+    printf '%s' "$input" | python3 -c '
+import json, sys
+try:
+    value = json.load(sys.stdin)
+    for key in sys.argv[1].split("."):
+        value = value[key]
+    if value is not None:
+        print(str(value).lower() if isinstance(value, bool) else value)
+except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+    pass
+' "$path" 2>/dev/null
+  elif command -v node >/dev/null 2>&1; then
+    printf '%s' "$input" | node -e '
+try {
+  let value = JSON.parse(require("fs").readFileSync(0, "utf8"));
+  for (const key of process.argv[1].split(".")) value = value[key];
+  if (value !== null && value !== undefined) process.stdout.write(String(value));
+} catch (_) {}
+' "$path" 2>/dev/null
+  elif command -v ruby >/dev/null 2>&1; then
+    printf '%s' "$input" | ruby -rjson -e '
+begin
+  value = JSON.parse(STDIN.read)
+  ARGV[0].split(".").each { |key| value = value.fetch(key) }
+  print value unless value.nil?
+rescue JSON::ParserError, KeyError, TypeError
+end
+' "$path" 2>/dev/null
+  fi
+}
+
+dim=$'\033[2m'
+reset=$'\033[0m'
+blue=$'\033[94m'
+green=$'\033[92m'
+magenta=$'\033[95m'
+yellow=$'\033[93m'
+cyan=$'\033[96m'
+separator="${dim}·${reset}"
+parts=()
+
+directory=$(json_value workspace.current_dir)
+[ -z "$directory" ] && directory=$(json_value cwd)
+[ -n "$directory" ] && parts+=("${blue}▣${reset} $(basename "$directory")")
+
+if [ -n "$directory" ] && branch=$(git -C "$directory" symbolic-ref --short HEAD 2>/dev/null); then
+  dirty=
+  [ -n "$(git -C "$directory" status --porcelain -uno 2>/dev/null | head -1)" ] && dirty="${yellow}*${reset}"
+  parts+=("${green}git:${reset}${branch}${dirty}")
+fi
+
+model=$(json_value model.display_name)
+[ -n "$model" ] && parts+=("${magenta}◈${reset} $model")
+
+context=$(json_value context_window.used_percentage)
+if [ -n "$context" ]; then
+  context_int=$(printf '%.0f' "$context" 2>/dev/null || printf '0')
+  parts+=("${cyan}${context_int}%${reset} ctx")
+fi
+
+cost=$(json_value cost.total_cost_usd)
+if [ -n "$cost" ]; then
+  cost_value=$(printf '%.2f' "$cost" 2>/dev/null || true)
+  [ -n "$cost_value" ] && parts+=("${green}\$${reset}${cost_value}")
+fi
+
+added=$(json_value cost.total_lines_added)
+removed=$(json_value cost.total_lines_removed)
+if [ -n "$added" ] && { [ "$added" != 0 ] || [ "${removed:-0}" != 0 ]; }; then
+  parts+=("${green}+${added}${reset}${dim}/${reset}${yellow}-${removed:-0}${reset}")
+fi
+
+[ "$(json_value exceeds_200k_tokens)" = true ] && parts+=("${yellow}200k+${reset}")
+
+if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
+  subagents=$(tmux show-options -wqv -t "$TMUX_PANE" @agent_subagents 2>/dev/null || true)
+  [ -n "$subagents" ] && [ "$subagents" != 0 ] && parts+=("${cyan}⑂${reset}${subagents}")
+fi
+
+output=
+for part in "${parts[@]:-}"; do
+  [ -z "$part" ] && continue
+  [ -n "$output" ] && output="$output  $separator  "
+  output="$output$part"
+done
+printf '%s' "$output"

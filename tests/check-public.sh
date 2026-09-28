@@ -9,7 +9,7 @@ if grep -RinE --exclude-dir=.git --exclude='check-public.sh' '(workos|bearer[[:s
   exit 1
 fi
 
-if grep -RinE '(curl[^|]*\||wget[^|]*\||sudo[[:space:]]|brew[[:space:]]+install|npm[[:space:]]+install)' setup.sh scripts hooks tmux/scripts zsh; then
+if grep -RinE '(curl[^|]*\||wget[^|]*\||sudo[[:space:]]|brew[[:space:]]+install|npm[[:space:]]+install)' setup.sh scripts hooks tmux/scripts zsh claude; then
   printf 'Unexpected installer or privileged command found.\n' >&2
   exit 1
 fi

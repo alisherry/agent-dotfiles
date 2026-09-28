@@ -4,6 +4,7 @@
     "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude UserPromptSubmit"}]}],
     "PreToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude PreToolUse"}]}],
     "Notification": [{"hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude Notification"}]}],
+    "SubagentStart": [{"hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude SubagentStart"}]}],
     "SubagentStop": [{"hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude SubagentStop"}]}],
     "Stop": [{"hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude Stop"}]}],
     "SessionEnd": [{"hooks": [{"type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/agent-state\" claude SessionEnd"}]}]

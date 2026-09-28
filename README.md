@@ -1,6 +1,6 @@
 # agent-dotfiles
 
-A small, public agent cockpit for locked-down laptops: a Moonlight-themed tmux setup tuned for Ghostty, a framework-free Zsh config, lifecycle state indicators, and provider-neutral coding skills. It is designed for running an approved command such as `sandbox-ai claude` or `sandbox-ai codex` inside tmux while editing in another IDE.
+A small, public agent cockpit for locked-down laptops: a Moonlight-themed tmux setup tuned for Ghostty, a framework-free Zsh config, Claude's cost/context statusline, lifecycle state indicators, and provider-neutral coding skills. It is designed for running an approved command such as `sandbox-ai claude` or `sandbox-ai codex` inside tmux while editing in another IDE.
 
 The repository deliberately does **not** install an editor, package manager, runtime, shell framework, font, or agent binary. It contains no company-specific material, credentials, gateway configuration, daemon, or network bootstrap.
 
@@ -28,14 +28,16 @@ Requirements: Bash 3.2+, Git, and tmux 3.2+. Clone using whatever workflow your 
 
 The first command is a dry run. `--apply` creates `~/.config/tmux`, backs up conflicting files under `~/.agent-dotfiles-backup/<timestamp>/`, and symlinks the checked-in configuration. It never invokes `sudo`, a package manager, or the network.
 
-Install the complete cockpit—tmux, Ghostty, and Zsh—with:
+Install the complete cockpit—tmux, Ghostty, Zsh, Claude status/hooks, and skills—with:
 
 ```sh
 ./setup.sh --all
 ./setup.sh --apply --all
 ```
 
-`--all` backs up and replaces `~/.config/ghostty/config` and `~/.zshenv`, so use the dry run first. Existing files are recoverable from the timestamped backup. Use only `--ghostty` or `--shell` to select one optional layer. The shell config does not use Oh My Zsh or install anything; it uses Starship when already available and otherwise renders a matching native-Zsh prompt.
+`--all` backs up and replaces `~/.config/ghostty/config`, `~/.zshenv`, and `~/.claude/settings.json`, so use the dry run first. Existing files are recoverable from the timestamped backup. Use only `--ghostty`, `--shell`, or `--claude` to select one optional layer. The shell config does not use Oh My Zsh or install anything; it uses Starship when already available and otherwise renders a matching native-Zsh prompt.
+
+The Claude layer shows directory, Git branch, model, context usage, estimated cost, changed lines, and active subagents, and exposes the bundled skills under `~/.claude/skills`. Its JSON reader uses the first parser already present from `jq`, Python, Node, or Ruby; it does not download one. Claude automatically reloads changes to user settings, but start a new session after installation to initialize every lifecycle hook.
 
 Start tmux normally and launch the approved agent command inside it. `prefix + r` reloads the config; the prefix is `C-a`.
 
@@ -70,6 +72,7 @@ If either command produces no pane identifier, keep using the cockpit but expect
 ```sh
 bash tests/check-public.sh
 bash tests/test-agent-state.sh
+bash tests/test-claude-statusline.sh
 bash tests/test-shell.sh
 ```
 

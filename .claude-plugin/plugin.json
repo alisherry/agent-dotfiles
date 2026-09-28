@@ -1,6 +1,6 @@
 {
   "name": "agent-dotfiles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A small tmux cockpit and provider-neutral workflows for coding agents.",
   "author": {"name": "alisherry"},
   "homepage": "https://github.com/alisherry/agent-dotfiles",

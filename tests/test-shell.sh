@@ -13,6 +13,10 @@ test -L "$test_home/.config/zsh/.zshrc"
 test -L "$test_home/.config/zsh/conf.d"
 test -L "$test_home/.config/starship.toml"
 test -L "$test_home/.config/ghostty/config"
+test -L "$test_home/.claude/settings.json"
+test -x "$test_home/.config/agent-dotfiles/scripts/agent-state"
+test -x "$test_home/.config/agent-dotfiles/scripts/claude-statusline"
+test -L "$test_home/.claude/skills/strict-code-review"
 
 env -u ZDOTDIR -u XDG_CACHE_HOME -u XDG_DATA_HOME -u XDG_STATE_HOME \
   HOME="$test_home" XDG_CONFIG_HOME="$test_home/.config" \
