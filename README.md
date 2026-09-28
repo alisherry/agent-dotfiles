@@ -1,6 +1,6 @@
 # agent-dotfiles
 
-A small, public agent cockpit for locked-down laptops: a Moonlight-themed tmux setup tuned for Ghostty, lifecycle state indicators, and provider-neutral coding skills. It is designed for running an approved command such as `sandbox-ai claude` or `sandbox-ai codex` inside tmux while editing in another IDE.
+A small, public agent cockpit for locked-down laptops: a Moonlight-themed tmux setup tuned for Ghostty, a framework-free Zsh config, lifecycle state indicators, and provider-neutral coding skills. It is designed for running an approved command such as `sandbox-ai claude` or `sandbox-ai codex` inside tmux while editing in another IDE.
 
 The repository deliberately does **not** install an editor, package manager, runtime, shell framework, font, or agent binary. It contains no company-specific material, credentials, gateway configuration, daemon, or network bootstrap.
 
@@ -28,14 +28,14 @@ Requirements: Bash 3.2+, Git, and tmux 3.2+. Clone using whatever workflow your 
 
 The first command is a dry run. `--apply` creates `~/.config/tmux`, backs up conflicting files under `~/.agent-dotfiles-backup/<timestamp>/`, and symlinks the checked-in configuration. It never invokes `sudo`, a package manager, or the network.
 
-For the matching Ghostty palette and window treatment, opt in explicitly:
+Install the complete cockpit—tmux, Ghostty, and Zsh—with:
 
 ```sh
-./setup.sh --ghostty
-./setup.sh --apply --ghostty
+./setup.sh --all
+./setup.sh --apply --all
 ```
 
-This backs up and replaces `~/.config/ghostty/config`, so omit `--ghostty` if you want to keep your existing terminal settings. The tmux config still enables Ghostty RGB, hyperlinks, extended keys, styled underlines, and passthrough either way.
+`--all` backs up and replaces `~/.config/ghostty/config` and `~/.zshenv`, so use the dry run first. Existing files are recoverable from the timestamped backup. Use only `--ghostty` or `--shell` to select one optional layer. The shell config does not use Oh My Zsh or install anything; it uses Starship when already available and otherwise renders a matching native-Zsh prompt.
 
 Start tmux normally and launch the approved agent command inside it. `prefix + r` reloads the config; the prefix is `C-a`.
 
@@ -70,6 +70,7 @@ If either command produces no pane identifier, keep using the cockpit but expect
 ```sh
 bash tests/check-public.sh
 bash tests/test-agent-state.sh
+bash tests/test-shell.sh
 ```
 
 See [SECURITY.md](SECURITY.md) for the trust model. Contributions should keep the default path free of private organization material and external runtime dependencies.

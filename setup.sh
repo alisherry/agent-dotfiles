@@ -4,12 +4,15 @@ set -eu
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 apply=false
 install_ghostty=false
+install_shell=false
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --apply) apply=true ;;
     --ghostty) install_ghostty=true ;;
-    *) printf 'Usage: %s [--apply] [--ghostty]\n' "$0" >&2; exit 2 ;;
+    --shell) install_shell=true ;;
+    --all) install_ghostty=true; install_shell=true ;;
+    *) printf 'Usage: %s [--apply] [--ghostty] [--shell] [--all]\n' "$0" >&2; exit 2 ;;
   esac
   shift
 done
@@ -27,6 +30,13 @@ printf '  link %s -> %s\n' "$tmux_dir/scripts/window-name" "$script_dir/tmux/scr
 printf '  link %s -> %s\n' "$tmux_dir/scripts/git-status" "$script_dir/tmux/scripts/git-status"
 if [ "$install_ghostty" = true ]; then
   printf '  link %s -> %s\n' "$ghostty_dir/config" "$script_dir/ghostty/config"
+fi
+if [ "$install_shell" = true ]; then
+  printf '  link %s -> %s\n' "$HOME/.zshenv" "$script_dir/zsh/.zshenv"
+  printf '  link %s -> %s\n' "$config_root/zsh/.zprofile" "$script_dir/zsh/.zprofile"
+  printf '  link %s -> %s\n' "$config_root/zsh/.zshrc" "$script_dir/zsh/.zshrc"
+  printf '  link %s -> %s\n' "$config_root/zsh/conf.d" "$script_dir/zsh/conf.d"
+  printf '  link %s -> %s\n' "$config_root/starship.toml" "$script_dir/zsh/starship.toml"
 fi
 printf '  existing files, if any, move under %s/%s/\n' "$backup_root" "$timestamp"
 
@@ -65,6 +75,15 @@ install_link "$script_dir/tmux/scripts/git-status" "$tmux_dir/scripts/git-status
 if [ "$install_ghostty" = true ]; then
   mkdir -p "$ghostty_dir"
   install_link "$script_dir/ghostty/config" "$ghostty_dir/config" ghostty-config
+fi
+
+if [ "$install_shell" = true ]; then
+  mkdir -p "$config_root/zsh"
+  install_link "$script_dir/zsh/.zshenv" "$HOME/.zshenv" zshenv
+  install_link "$script_dir/zsh/.zprofile" "$config_root/zsh/.zprofile" zprofile
+  install_link "$script_dir/zsh/.zshrc" "$config_root/zsh/.zshrc" zshrc
+  install_link "$script_dir/zsh/conf.d" "$config_root/zsh/conf.d" zsh-conf.d
+  install_link "$script_dir/zsh/starship.toml" "$config_root/starship.toml" starship.toml
 fi
 
 printf '\nDone. Start tmux normally, then launch your approved agent command inside it.\n'
