@@ -1,0 +1,36 @@
+# Optional Ghostty side of the Moonlight cockpit. No external font required.
+background = 222436
+foreground = c8d3f5
+cursor-color = 82aaff
+selection-background = 2d3f76
+selection-foreground = c8d3f5
+
+palette = 0=1b1d2b
+palette = 1=ff757f
+palette = 2=c3e88d
+palette = 3=ffc777
+palette = 4=82aaff
+palette = 5=c099ff
+palette = 6=86e1fc
+palette = 7=c8d3f5
+palette = 8=444a73
+palette = 9=ff757f
+palette = 10=c3e88d
+palette = 11=ffc777
+palette = 12=82aaff
+palette = 13=c099ff
+palette = 14=86e1fc
+palette = 15=ffffff
+
+background-opacity = 0.98
+background-blur-radius = 30
+bold-is-bright = true
+window-decoration = false
+macos-titlebar-style = transparent
+window-theme = auto
+window-padding-color = background
+window-padding-x = 8,0
+window-padding-y = 4,0
+window-padding-balance = false
+copy-on-select = clipboard
+shell-integration-features = cursor,sudo,no-title

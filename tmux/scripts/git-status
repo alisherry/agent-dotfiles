@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -u
+
+directory=${1:-}
+[ -n "$directory" ] || exit 0
+git -C "$directory" rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+
+branch=$(git -C "$directory" symbolic-ref --short HEAD 2>/dev/null || git -C "$directory" describe --tags --exact-match 2>/dev/null || git -C "$directory" rev-parse --short HEAD 2>/dev/null || true)
+[ -n "$branch" ] || exit 0
+
+index=$(git -C "$directory" status --porcelain -b 2>/dev/null || true)
+flags=
+
+printf '%s\n' "$index" | grep -qE '^\?\?' && flags="${flags}?"
+printf '%s\n' "$index" | grep -qE '^[ MARC]M |^M[ MD]' && flags="${flags}~"
+printf '%s\n' "$index" | grep -qE '^A[ MDAU] ' && flags="${flags}+"
+printf '%s\n' "$index" | grep -qE '^([MARCDU ]D|D[ UM]) ' && flags="${flags}-"
+
+ahead=false
+behind=false
+printf '%s\n' "$index" | grep -qE '^## .*ahead' && ahead=true
+printf '%s\n' "$index" | grep -qE '^## .*behind' && behind=true
+if [ "$ahead" = true ] && [ "$behind" = true ]; then
+  flags="${flags}↕"
+elif [ "$ahead" = true ]; then
+  flags="${flags}↑"
+elif [ "$behind" = true ]; then
+  flags="${flags}↓"
+fi
+
+if [ -n "$flags" ]; then
+  printf ' %s #[fg=#ffc777]%s' "$branch" "$flags"
+else
+  printf ' %s #[fg=#c3e88d]✓' "$branch"
+fi

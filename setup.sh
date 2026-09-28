@@ -3,20 +3,31 @@ set -eu
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 apply=false
+install_ghostty=false
 
-case "${1:-}" in
-  --apply) apply=true ;;
-  '') ;;
-  *) printf 'Usage: %s [--apply]\n' "$0" >&2; exit 2 ;;
-esac
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --apply) apply=true ;;
+    --ghostty) install_ghostty=true ;;
+    *) printf 'Usage: %s [--apply] [--ghostty]\n' "$0" >&2; exit 2 ;;
+  esac
+  shift
+done
 
-config_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}/tmux
+config_root=${XDG_CONFIG_HOME:-"$HOME/.config"}
+tmux_dir="$config_root/tmux"
+ghostty_dir="$config_root/ghostty"
 backup_root="$HOME/.agent-dotfiles-backup"
 timestamp=$(date '+%Y%m%d-%H%M%S')
 
 printf 'Agent dotfiles setup plan:\n'
-printf '  link %s -> %s\n' "$config_dir/tmux.conf" "$script_dir/tmux/tmux.conf"
-printf '  link %s -> %s\n' "$config_dir/theme.conf" "$script_dir/tmux/theme.conf"
+printf '  link %s -> %s\n' "$tmux_dir/tmux.conf" "$script_dir/tmux/tmux.conf"
+printf '  link %s -> %s\n' "$tmux_dir/theme.conf" "$script_dir/tmux/theme.conf"
+printf '  link %s -> %s\n' "$tmux_dir/scripts/window-name" "$script_dir/tmux/scripts/window-name"
+printf '  link %s -> %s\n' "$tmux_dir/scripts/git-status" "$script_dir/tmux/scripts/git-status"
+if [ "$install_ghostty" = true ]; then
+  printf '  link %s -> %s\n' "$ghostty_dir/config" "$script_dir/ghostty/config"
+fi
 printf '  existing files, if any, move under %s/%s/\n' "$backup_root" "$timestamp"
 
 if [ "$apply" != true ]; then
@@ -24,7 +35,7 @@ if [ "$apply" != true ]; then
   exit 0
 fi
 
-mkdir -p "$config_dir"
+mkdir -p "$tmux_dir/scripts"
 
 install_link() {
   source_path=$1
@@ -46,7 +57,14 @@ install_link() {
   printf 'Linked: %s\n' "$target_path"
 }
 
-install_link "$script_dir/tmux/tmux.conf" "$config_dir/tmux.conf" tmux.conf
-install_link "$script_dir/tmux/theme.conf" "$config_dir/theme.conf" theme.conf
+install_link "$script_dir/tmux/tmux.conf" "$tmux_dir/tmux.conf" tmux.conf
+install_link "$script_dir/tmux/theme.conf" "$tmux_dir/theme.conf" theme.conf
+install_link "$script_dir/tmux/scripts/window-name" "$tmux_dir/scripts/window-name" window-name
+install_link "$script_dir/tmux/scripts/git-status" "$tmux_dir/scripts/git-status" git-status
+
+if [ "$install_ghostty" = true ]; then
+  mkdir -p "$ghostty_dir"
+  install_link "$script_dir/ghostty/config" "$ghostty_dir/config" ghostty-config
+fi
 
 printf '\nDone. Start tmux normally, then launch your approved agent command inside it.\n'
